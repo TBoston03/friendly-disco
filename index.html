@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Portfolio</title>
+  <!-- Manrope font for heading -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -12,15 +14,41 @@
       font-family: Arial, sans-serif;
     }
 
+    :root {
+      --bg: #f4f4f4;
+      --text: #333333;
+      --header-bg: #222222;
+      --header-text: #ffffff;
+      --muted: #888888;
+      --surface: #ffffff;
+      --accent: #0066cc;
+      --button-bg: rgba(255,255,255,0.06);
+      --button-border: rgba(255,255,255,0.12);
+      --item-bg: rgba(255,255,255,0.85);
+    }
+
+    .dark-theme {
+      --bg: #0b1116;
+      --text: #e6eef6;
+      --header-bg: #071823;
+      --header-text: #eaf6ff;
+      --muted: #9fb4c9;
+      --surface: #0f1a23;
+      --accent: #6fb3ff;
+      --button-bg: rgba(255,255,255,0.03);
+      --button-border: rgba(255,255,255,0.06);
+      --item-bg: rgba(255,255,255,0.05);
+    }
+
     body {
-      background: #f4f4f4;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
 
     header {
-      background: #222;
-      color: #fff;
+      background: var(--header-bg);
+      color: var(--header-text);
       padding: 2rem 0;
       text-align: center;
     }
@@ -28,11 +56,49 @@
     header h1 {
       margin-bottom: 0.5rem;
       font-size: 2.5rem;
+      /* Manrope heading */
+      font-family: 'Manrope', Arial, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* Per-letter headline animation */
+    .headline {
+      display: inline-block;
+      line-height: 1;
+    }
+
+    .headline .char {
+      display: inline-block;
+      transform: translateY(0);
+      will-change: transform, opacity;
+      cursor: default;
+    }
+
+    /* rise while hovered */
+    .headline .char.rise {
+      animation: letterRise 260ms cubic-bezier(.2,.9,.25,1) forwards;
+    }
+
+    /* drop and bounce on leave */
+    .headline .char.drop {
+      animation: letterDrop 700ms cubic-bezier(.22,.9,.3,1) forwards;
+    }
+
+    @keyframes letterRise {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-18px); }
+    }
+
+    @keyframes letterDrop {
+      0% { transform: translateY(-18px); }
+      60% { transform: translateY(8px); }
+      100% { transform: translateY(0); }
     }
 
     header p {
       font-size: 1.2rem;
-      color: #ccc;
+      color: var(--muted);
     }
 
     .container {
@@ -48,7 +114,7 @@
     }
 
     .project {
-      background: white;
+      background: var(--surface);
       border-radius: 8px;
       padding: 1rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -70,24 +136,203 @@
     }
 
     a {
-      color: #0066cc;
+      color: var(--accent);
       text-decoration: none;
     }
 
     a:hover {
       text-decoration: underline;
     }
+    /* Top-left dropdown styles: wider transparent button and animated identical menu buttons */
+    .top-left-menu {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
+      font-family: inherit;
+    }
+
+    .menu-button {
+      min-width: 240px;
+      background: var(--button-bg);
+      color: var(--header-text);
+      border: 1px solid var(--button-border);
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      justify-content: center;
+      font-weight: 600;
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+
+    .menu-button:focus {
+      outline: 2px solid rgba(0,122,255,0.9);
+      outline-offset: 3px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 0.6rem);
+      left: 0;
+      width: 100%;
+      min-width: 240px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      /* keep in layout but hidden so animations can run without jumping */
+      display: block;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none; /* turned on when visible */
+      z-index: 1010; /* ensure items sit above the button while animating */
+      transition: opacity 200ms ease, visibility 200ms linear;
+    }
+
+    .dropdown.show {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* dropdown items styled as identical buttons */
+    .dropdown .dropdown-item {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.6rem 0.9rem;
+      margin: 0.35rem 0;
+  border-radius: 10px;
+  border: 1px solid var(--button-border);
+  background: var(--item-bg);
+  color: var(--text);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+      text-decoration: none;
+      text-align: left;
+      font-size: 0.97rem;
+      cursor: pointer;
+
+      /* initial hidden state for slide-down animation */
+      opacity: 0;
+      transform: translateY(-18px);
+      animation: none;
+      /* subtle floating shadow while open */
+      box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+    }
+
+    /* keyframes: accelerate downwards then decelerate to a stop with a subtle overshoot */
+    @keyframes slideDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-18px);
+      }
+      60% {
+        /* accelerate past the resting spot slightly for a natural feel */
+        transform: translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* closing animation: slide up and fade out */
+    @keyframes slideUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-14px);
+      }
+    }
+
+    /* when menu is shown, items run the slideDown animation with staggered delays */
+    .dropdown.show:not(.closing) .dropdown-item {
+      animation: slideDown 520ms cubic-bezier(.22,.9,.3,1) forwards;
+    }
+    /* When the dropdown has class 'closing', run slideUp for each item with stagger */
+    .dropdown.closing .dropdown-item {
+      animation: slideUp 420ms cubic-bezier(.22,.9,.3,1) forwards;
+    }
+    .dropdown.show .dropdown-item:nth-child(1) { animation-delay: 0ms; }
+    .dropdown.show .dropdown-item:nth-child(2) { animation-delay: 60ms; }
+    .dropdown.show .dropdown-item:nth-child(3) { animation-delay: 120ms; }
+    .dropdown.show .dropdown-item:nth-child(4) { animation-delay: 180ms; }
+
+    .dropdown .dropdown-item:hover {
+      background: #f5f7fb;
+    }
+
+    /* Theme button specific styles */
+    .theme-button {
+      background: linear-gradient(180deg,#ffefc2,#ffd58a);
+      border: 1px solid rgba(0,0,0,0.06);
+      color: #6a3d00;
+      font-weight: 700;
+      text-align: center;
+      transition: transform 220ms cubic-bezier(.2,.9,.25,1), box-shadow 180ms ease;
+      will-change: transform;
+    }
+
+    .theme-button.pressed {
+      transform: scale(0.92);
+      transition: transform 160ms ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08) inset;
+    }
+
+    /* release expansion animation (rapid) */
+    @keyframes releaseExpand {
+      0% { transform: scale(0.92); }
+      60% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+
+    .theme-button.released {
+      animation: releaseExpand 260ms cubic-bezier(.2,.9,.25,1) forwards;
+    }
+
+    /* theme-button target styles: show the theme the button will switch to */
+    .theme-button.target-dark {
+      background: linear-gradient(180deg,#111419,#1b2730);
+      color: #eaf6ff;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .theme-button.target-light {
+      background: linear-gradient(180deg,#fff9ea,#fff1d0);
+      color: #6a3d00;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    /* While closing, reduce the main button shadow to avoid heavy overlap */
+    .top-left-menu.closing .menu-button {
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
   </style>
 </head>
 <body>
 
   <header>
-<<<<<<< HEAD
-    <h1>Thomas Boston</h1>
-=======
+    <div class="top-left-menu" id="topLeftMenu">
+      <button class="menu-button" id="menuButton" aria-haspopup="true" aria-expanded="false">
+        ☰ Menu
+      </button>
+      <div class="dropdown" id="menuDropdown" role="menu" aria-labelledby="menuButton">
+        <a class="dropdown-item" href="#" role="menuitem">Home</a>
+        <a class="dropdown-item" href="#projects" role="menuitem">Projects</a>
+        <a class="dropdown-item" href="#about" role="menuitem">About</a>
+        <button class="dropdown-item theme-button" role="menuitem" id="themeToggle">Toggle Theme</button>
+      </div>
+    </div>
+
     <h1>Tom Boston</h1>
->>>>>>> 9befd6c1f27e917a7127337ced8a9656945339aa
-    <p>Developer • Designer • Creator</p>
   </header>
 
   <div class="container">
@@ -108,8 +353,370 @@
   </div>
 
   <footer>
-    © 2025 Your Name. All rights reserved.
+    © 2025 Tom Boston. All rights reserved.
   </footer>
+  
+  <script>
+    (function() {
+      const btn = document.getElementById('menuButton');
+      const dropdown = document.getElementById('menuDropdown');
 
+      function closeMenu() {
+        // play closing animation then hide
+        const items = Array.from(dropdown.querySelectorAll('.dropdown-item'));
+        dropdown.classList.add('closing');
+        document.getElementById('topLeftMenu').classList.add('closing');
+
+        // set reverse stagger delays so items close from bottom to top (60ms steps)
+        items.forEach((it, i) => {
+          const delay = (items.length - 1 - i) * 60; // ms
+          it.style.animationDelay = delay + 'ms';
+        });
+
+        // total time = max delay + animation duration (420ms) + small buffer
+        const total = ((items.length - 1) * 60) + 420 + 60;
+        setTimeout(() => {
+          dropdown.classList.remove('show');
+          dropdown.classList.remove('closing');
+          document.getElementById('topLeftMenu').classList.remove('closing');
+          // clear inline animationDelay styles
+          items.forEach(it => it.style.animationDelay = '');
+          btn.setAttribute('aria-expanded', 'false');
+        }, total);
+      }
+
+      function openMenu() {
+        // Cancel any closing in-progress
+        dropdown.classList.remove('closing');
+        document.getElementById('topLeftMenu').classList.remove('closing');
+        const items = Array.from(dropdown.querySelectorAll('.dropdown-item'));
+  items.forEach((it, i) => it.style.animationDelay = i * 60 + 'ms');
+
+        // Ensure dropdown is visible, then add show to let CSS transitions run
+        dropdown.classList.add('show');
+        // set aria after a frame to ensure CSS transitions pick up
+        requestAnimationFrame(() => btn.setAttribute('aria-expanded', 'true'));
+      }
+
+      btn.addEventListener('click', (e) => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        if (expanded) closeMenu(); else openMenu();
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        const target = e.target;
+        if (!document.getElementById('topLeftMenu').contains(target)) {
+          closeMenu();
+        }
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMenu();
+      });
+
+      // Theme handling: initialize from localStorage or prefers-color-scheme
+      const themeToggle = document.getElementById('themeToggle');
+      const root = document.documentElement;
+
+      function applyTheme(name) {
+        if (name === 'dark') root.classList.add('dark-theme');
+        else root.classList.remove('dark-theme');
+        localStorage.setItem('theme', name);
+        updateThemeButtonTarget();
+      }
+
+      function updateThemeButtonTarget() {
+        if (!themeToggle) return;
+        const isDark = root.classList.contains('dark-theme');
+        themeToggle.classList.toggle('target-dark', !isDark); // show dark button when current is light
+        themeToggle.classList.toggle('target-light', isDark);
+      }
+
+      // initialize
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark' || saved === 'light') applyTheme(saved);
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
+      else applyTheme('light');
+
+      if (themeToggle) {
+        // suppression flag to avoid double-toggle when both pointerup and click fire
+        let suppressClick = false;
+
+        // helper: create animated reveal that shows the new theme expanding from the button
+        function revealTheme(nextTheme, cx, cy) {
+          // Create overlay that will reveal the new theme inside an expanding circle
+          const overlay = document.createElement('div');
+          overlay.className = 'theme-reveal-overlay';
+          // Use fixed positioning and a high z-index
+          overlay.style.position = 'fixed';
+          overlay.style.inset = '0';
+          overlay.style.pointerEvents = 'none';
+          overlay.style.zIndex = 20000;
+          // Determine background color for the target theme (match CSS variables)
+          const colors = {
+            light: '#f4f4f4',
+            dark: '#0b1116'
+          };
+          overlay.style.background = colors[nextTheme] || colors.light;
+          // Start with a zero-radius clip-path at the button center
+          overlay.style.clipPath = `circle(0px at ${cx}px ${cy}px)`;
+          overlay.style.transition = 'clip-path 560ms cubic-bezier(.2,.9,.25,1)';
+          document.body.appendChild(overlay);
+
+          // calculate radius to cover the viewport from the center point
+          const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+          const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+          const distX = Math.max(cx, vw - cx);
+          const distY = Math.max(cy, vh - cy);
+          const radius = Math.hypot(distX, distY) + 20;
+
+          // trigger the transition on the next frame
+          requestAnimationFrame(() => {
+            overlay.style.clipPath = `circle(${radius}px at ${cx}px ${cy}px)`;
+          });
+
+          // When transition ends, apply the theme to the document and remove overlay
+          const onEnd = () => {
+            overlay.removeEventListener('transitionend', onEnd);
+            // apply theme to the page so subsequent interactions are themed
+            applyTheme(nextTheme);
+            // fade out overlay quickly to reveal the fully themed page
+            overlay.style.transition = 'opacity 220ms ease';
+            overlay.style.opacity = '0';
+            setTimeout(() => { try { document.body.removeChild(overlay); } catch (e) {} }, 260);
+          };
+          overlay.addEventListener('transitionend', onEnd);
+        }
+
+        themeToggle.addEventListener('click', (e) => {
+          if (suppressClick) return;
+          const rect = themeToggle.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const next = root.classList.contains('dark-theme') ? 'light' : 'dark';
+          // close menu immediately and start the reveal animation
+          closeMenu();
+          revealTheme(next, cx, cy);
+        });
+
+        // If Pointer Events are available, use press-and-hold interactions
+        if (window.PointerEvent) {
+          let pointerHeld = false;
+
+          const onPointerDown = (e) => {
+            // prevent synthetic mouse events and clicks
+            e.preventDefault();
+            pointerHeld = true;
+            themeToggle.classList.remove('released');
+            themeToggle.classList.add('pressed');
+            // briefly suppress click until pointerup/animation finishes
+            suppressClick = true;
+          };
+
+          const onPointerUp = (e) => {
+            if (!pointerHeld) return;
+            pointerHeld = false;
+            themeToggle.classList.remove('pressed');
+            // clear any inline animation delay left from opening so release anim runs immediately
+            themeToggle.style.animationDelay = '';
+            // play release expand
+            themeToggle.classList.add('released');
+
+            // Determine next theme and trigger the reveal animation from the
+            // button center so the new theme expands outward like a shockwave.
+            const rect = themeToggle.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const next = root.classList.contains('dark-theme') ? 'light' : 'dark';
+            // Close the menu immediately, then start the reveal animation which
+            // will apply the theme when the reveal finishes.
+            closeMenu();
+            revealTheme(next, cx, cy);
+
+            // Remove the released class after the release animation completes to
+            // return the element to its normal state. Also clear suppression so
+            // synthetic clicks won't re-trigger toggles.
+            const onAnimEnd = () => {
+              themeToggle.removeEventListener('animationend', onAnimEnd);
+              themeToggle.classList.remove('released');
+              // clear suppression shortly after to avoid click firing
+              setTimeout(() => { suppressClick = false; }, 50);
+            };
+            themeToggle.addEventListener('animationend', onAnimEnd);
+          };
+
+          themeToggle.addEventListener('pointerdown', onPointerDown);
+          document.addEventListener('pointerup', onPointerUp);
+          // Cancel if pointer leaves (touchcancel / pointercancel)
+          themeToggle.addEventListener('pointercancel', () => {
+            pointerHeld = false;
+            themeToggle.classList.remove('pressed');
+            suppressClick = false;
+          });
+        }
+      }
+    })();
+  </script>
+  <script>
+    // Per-letter hover animations for the H1
+    (function() {
+      const h1 = document.querySelector('header h1');
+      if (!h1) return;
+
+      // Wrap text nodes into spans.char
+      const text = h1.textContent.trim();
+      h1.textContent = '';
+      const wrapper = document.createElement('span');
+      wrapper.className = 'headline';
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = ch === ' ' ? '\u00A0' : ch;
+        wrapper.appendChild(span);
+      }
+      h1.appendChild(wrapper);
+
+      // pointerenter/move on wrapper: make hovered character rise
+      wrapper.addEventListener('pointermove', (e) => {
+        const target = e.target;
+        if (!target.classList || !target.classList.contains('char')) return;
+        // clear drop class
+        target.classList.remove('drop');
+        // add rise
+        target.classList.add('rise');
+        // remove rise shortly after so repeated moves re-trigger
+        clearTimeout(target._riseTimer);
+        target._riseTimer = setTimeout(() => target.classList.remove('rise'), 300);
+      });
+
+      // on leave, drop and bounce nearby letters slightly with small stagger
+      wrapper.addEventListener('pointerleave', (e) => {
+        const chars = Array.from(wrapper.querySelectorAll('.char'));
+        chars.forEach((ch, i) => {
+          clearTimeout(ch._dropTimer);
+          ch._dropTimer = setTimeout(() => {
+            ch.classList.remove('rise');
+            ch.classList.add('drop');
+            // cleanup after animation
+            ch.addEventListener('animationend', function cleanup() {
+              ch.classList.remove('drop');
+              ch.removeEventListener('animationend', cleanup);
+            });
+          }, i * 18);
+        });
+      });
+    })();
+  </script>
+  <style>
+    /* Custom blue circle cursor (transform-based, GPU-friendly) */
+    @media (pointer: fine) {
+      body { cursor: none; }
+    }
+
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00b4cc; /* requested blue */
+      pointer-events: none;
+      transform: translate3d(-50%, -50%, 0) scale(1);
+      transition: opacity 160ms ease, background-color 160ms ease;
+      z-index: 99999;
+      will-change: transform, opacity;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    .custom-cursor.shrink { transform: translate3d(-50%, -50%, 0) scale(0.78); }
+    .custom-cursor.hidden { opacity: 0; }
+  </style>
+
+  <style>
+    /* Theme reveal overlay (used for expanding shockwave when toggling theme) */
+    .theme-reveal-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20000;
+      will-change: clip-path, opacity;
+      mix-blend-mode: normal;
+    }
+  </style>
+
+  <script>
+    (function() {
+      // Transform-based smooth cursor (lerp)
+      const cursor = document.createElement('div');
+      cursor.className = 'custom-cursor hidden';
+      document.body.appendChild(cursor);
+
+      // Target coordinates (set by pointer events) and current rendered coords
+      let tx = -100, ty = -100;
+      let x = tx, y = ty;
+      let raf = null;
+      let visible = false;
+      // scale is controlled via class 'shrink' for press feedback
+
+      // Lerp factor (0-1) - lower is smoother/slower
+      const LERP = 0.18;
+
+      function loop() {
+        // interpolate
+        x += (tx - x) * LERP;
+        y += (ty - y) * LERP;
+        // render using translate3d and keep center offset via translate(-50%,-50%)
+        cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+        raf = requestAnimationFrame(loop);
+      }
+
+      function onPointerMove(e) {
+        // If pointer is over an input-like element, hide cursor to avoid occlusion
+        const tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) {
+          cursor.classList.add('hidden');
+        } else {
+          cursor.classList.remove('hidden');
+        }
+
+        tx = e.clientX;
+        ty = e.clientY;
+
+        if (!visible) {
+          visible = true;
+          // start loop
+          if (!raf) loop();
+        }
+      }
+
+      function onPointerDown() {
+        cursor.classList.add('shrink');
+      }
+
+      function onPointerUp() {
+        cursor.classList.remove('shrink');
+      }
+
+      // Hide cursor when window loses focus
+      function onBlur() { cursor.classList.add('hidden'); }
+      function onFocus() { cursor.classList.remove('hidden'); }
+
+      // Only install on fine pointers (desktop) to avoid interfering with touch
+      if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+        document.addEventListener('pointermove', onPointerMove, { passive: true });
+        document.addEventListener('pointerdown', onPointerDown, { passive: true });
+        document.addEventListener('pointerup', onPointerUp, { passive: true });
+        window.addEventListener('blur', onBlur);
+        window.addEventListener('focus', onFocus);
+      } else {
+        // Ensure we don't leave a hidden cursor visible on touch devices
+        cursor.classList.add('hidden');
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f4f4;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #222;
+      color: #fff;
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    header h1 {
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .project h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .project p {
+      color: #666;
+    }
+
+    footer {
+      text-align: center;
+      margin: 3rem 0;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Tom Boston</h1>
+    <p>Developer • Designer • Creator</p>
+  </header>
+
+  <div class="container">
+    <h2>Projects</h2>
+    <div class="projects">
+      <div class="project">
+        <h3>Project One</h3>
+        <p>A short description of your project. You can link to GitHub or a live demo.</p>
+        <a href="https://github.com/yourname/project1" target="_blank">View Project →</a>
+      </div>
+      <div class="project">
+        <h3>Project Two</h3>
+        <p>Another project description. Talk about what you built or learned.</p>
+        <a href="https://github.com/yourname/project2" target="_blank">View Project →</a>
+      </div>
+      <!-- Add more projects as needed -->
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Your Name. All rights reserved.
+  </footer>
+
+</body>
+</html>

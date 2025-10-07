@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About — Tom Boston</title>
+  <!-- Manrope font for heading -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    :root {
+      --bg: #f4f4f4;
+      --text: #333333;
+      --header-bg: #222222;
+      --header-text: #ffffff;
+      --muted: #888888;
+      --surface: #ffffff;
+      --accent: #0066cc;
+      --button-bg: rgba(255,255,255,0.06);
+      --button-border: rgba(255,255,255,0.12);
+      --item-bg: rgba(255,255,255,0.85);
+    }
+
+    .dark-theme {
+      --bg: #0b1116;
+      --text: #e6eef6;
+      --header-bg: #071823;
+      --header-text: #eaf6ff;
+      --muted: #9fb4c9;
+      --surface: #0f1a23;
+      --accent: #6fb3ff;
+      --button-bg: rgba(255,255,255,0.03);
+      --button-border: rgba(255,255,255,0.06);
+      --item-bg: rgba(255,255,255,0.05);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    header h1 {
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+      /* Manrope heading */
+      font-family: 'Manrope', Arial, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .project, .card {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      text-align: center;
+      margin: 3rem 0;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* keep existing top-left menu and device-toggle styles minimal to match index.html */
+    .top-left-menu { position: fixed; top: 1rem; left: 1rem; z-index: 1000; }
+    .menu-button { min-width: 240px; background: var(--button-bg); color: var(--header-text); border: 1px solid var(--button-border); padding: 0.6rem 0.9rem; border-radius: 10px; }
+    .device-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 1100; width: 52px; height: 52px; background: var(--button-bg); border: 1px solid var(--button-border); border-radius: 12px; }
+
+    /* small responsive nicety */
+    @media (max-width:520px) {
+      .menu-button { min-width: 120px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="top-left-menu" id="topLeftMenu">
+      <a href="index.html" class="menu-button">← Home</a>
+    </div>
+
+    <!-- Device toggle placeholder to match site header (non-functional copy) -->
+    <button id="deviceToggle" class="device-toggle" aria-pressed="false" title="Toggle device view"></button>
+
+    <h1>About — Tom Boston</h1>
+    <p style="color:var(--muted); margin-top:0.5rem;">A little about me and what I build.</p>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>About Me</h2>
+      <p style="color:var(--muted); margin-top:0.6rem;">Hi — I'm Tom. I'm a developer who likes crafting small, delightful web experiences. I focus on front-end polish, accessible interactions, and tiny animations that make interfaces feel friendly.</p>
+      <p style="margin-top:0.8rem;">I build side projects, maintain a few open-source libraries, and enjoy learning new tools. I like to keep my sites simple, fast, and easy to maintain.</p>
+    </section>
+
+    <section style="margin-top:1rem;" class="card">
+      <h3>Skills & Interests</h3>
+      <ul style="margin-top:0.6rem; color:var(--muted);">
+        <li>JavaScript, HTML, CSS</li>
+        <li>Accessibility & UX polish</li>
+        <li>Small tools and animations</li>
+        <li>Open-source collaboration</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Tom Boston. All rights reserved.
+  </footer>
+</body>
+</html>

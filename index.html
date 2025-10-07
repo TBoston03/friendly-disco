@@ -152,6 +152,52 @@
       font-family: inherit;
     }
 
+    /* Device toggle (phone <-> laptop) */
+    .device-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1100; /* above menu */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      background: var(--button-bg);
+      border: 1px solid var(--button-border);
+      border-radius: 12px;
+      padding: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+    }
+
+    .device-toggle:focus { outline: 2px solid rgba(0,122,255,0.9); outline-offset: 3px; }
+
+    /* SVG stroke style for line drawing look */
+    .device-icon svg { display: block; width: 36px; height: 36px; }
+    .device-icon .stroke {
+      fill: none;
+      stroke: var(--header-text);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 2000; /* large, will be animated via stroke-dashoffset */
+      stroke-dashoffset: 0;
+      transition: stroke 240ms ease, stroke-dashoffset 640ms cubic-bezier(.2,.9,.25,1);
+    }
+
+    /* initial state: phone visible, laptop hidden via dashoffset */
+    .device-mode--phone .phone-group .stroke { stroke-dashoffset: 0; }
+    .device-mode--phone .laptop-group .stroke { stroke-dashoffset: 2000; }
+
+    .device-mode--desktop .phone-group .stroke { stroke-dashoffset: 2000; }
+    .device-mode--desktop .laptop-group .stroke { stroke-dashoffset: 0; }
+
+    /* subtle background change when toggled to desktop */
+    .device-toggle.desktop { background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)); }
+
     .menu-button {
       min-width: 240px;
       background: var(--button-bg);
@@ -325,14 +371,35 @@
         ☰ Menu
       </button>
       <div class="dropdown" id="menuDropdown" role="menu" aria-labelledby="menuButton">
-        <a class="dropdown-item" href="#" role="menuitem">Home</a>
-        <a class="dropdown-item" href="#projects" role="menuitem">Projects</a>
-        <a class="dropdown-item" href="#about" role="menuitem">About</a>
+  <a class="dropdown-item" href="index.html" role="menuitem">Home</a>
+  <a class="dropdown-item" href="#projects" role="menuitem">Projects</a>
+  <a class="dropdown-item" href="about.html" role="menuitem">About</a>
         <button class="dropdown-item theme-button" role="menuitem" id="themeToggle">Toggle Theme</button>
       </div>
     </div>
 
-    <h1>Tom Boston</h1>
+  <!-- Device toggle (phone <-> laptop) -->
+  <button id="deviceToggle" class="device-toggle" aria-pressed="false" title="Toggle device view">
+      <span class="device-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="device icon">
+          <!-- Phone group: simple rounded rectangle with speaker line -->
+          <g class="phone-group">
+            <rect class="stroke" x="22" y="8" width="20" height="40" rx="3" ry="3" />
+            <line class="stroke" x1="28" y1="12" x2="36" y2="12" />
+            <circle class="stroke" cx="32" cy="44" r="1.6" />
+          </g>
+          <!-- Laptop group: screen + base -->
+          <g class="laptop-group">
+            <rect class="stroke" x="10" y="10" width="44" height="28" rx="2" ry="2" />
+            <line class="stroke" x1="6" y1="42" x2="58" y2="42" />
+            <line class="stroke" x1="22" y1="46" x2="42" y2="46" />
+          </g>
+        </svg>
+      </span>
+      <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px;">Toggle device mode</span>
+    </button>
+
+  <h1>Tom Boston</h1>
   </header>
 
   <div class="container">
@@ -557,6 +624,66 @@
           });
         }
       }
+    })();
+  </script>
+  <script>
+    (function() {
+      // Device toggle logic (phone <-> desktop)
+      const toggle = document.getElementById('deviceToggle');
+      const root = document.documentElement;
+      // Classes to apply to <html> to control SVG dashoffset via CSS
+      const PHONE_CLASS = 'device-mode--phone';
+      const DESKTOP_CLASS = 'device-mode--desktop';
+
+      function applyMode(mode) {
+        if (mode === 'desktop') {
+          root.classList.remove(PHONE_CLASS);
+          root.classList.add(DESKTOP_CLASS);
+          toggle.classList.add('desktop');
+          toggle.setAttribute('aria-pressed', 'true');
+        } else {
+          root.classList.remove(DESKTOP_CLASS);
+          root.classList.add(PHONE_CLASS);
+          toggle.classList.remove('desktop');
+          toggle.setAttribute('aria-pressed', 'false');
+        }
+        try { localStorage.setItem('deviceMode', mode); } catch(e) {}
+      }
+
+      // Read saved mode or prefer phone for small screens
+      let saved = null;
+      try { saved = localStorage.getItem('deviceMode'); } catch(e) {}
+      if (saved === 'desktop' || saved === 'phone') applyMode(saved);
+      else applyMode(window.innerWidth > 900 ? 'desktop' : 'phone');
+
+      // animate by toggling classes; CSS transitions handle dashoffset
+      function toggleMode() {
+        const isDesktop = root.classList.contains(DESKTOP_CLASS);
+        applyMode(isDesktop ? 'phone' : 'desktop');
+        // small visual press feedback
+        toggle.classList.add('pressed');
+        setTimeout(() => toggle.classList.remove('pressed'), 160);
+      }
+
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleMode();
+      });
+
+      // Support pointer down/up feedback similar to theme button
+      if (window.PointerEvent) {
+        toggle.addEventListener('pointerdown', (e) => { toggle.classList.add('pressed'); });
+        document.addEventListener('pointerup', (e) => { toggle.classList.remove('pressed'); });
+      }
+
+      // Optional: animate when page resizes to switch default
+      window.addEventListener('resize', () => {
+        // if user has explicitly selected, don't auto-change
+        let userPref = null;
+        try { userPref = localStorage.getItem('deviceMode'); } catch(e) {}
+        if (userPref) return;
+        if (window.innerWidth > 900) applyMode('desktop'); else applyMode('phone');
+      });
     })();
   </script>
   <script>

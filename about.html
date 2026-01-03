@@ -6,104 +6,17 @@
   <title>About — Tom Boston</title>
   <!-- Manrope font for heading -->
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    :root {
-      --bg: #f4f4f4;
-      --text: #333333;
-      --header-bg: #222222;
-      --header-text: #ffffff;
-      --muted: #888888;
-      --surface: #ffffff;
-      --accent: #0066cc;
-      --button-bg: rgba(255,255,255,0.06);
-      --button-border: rgba(255,255,255,0.12);
-      --item-bg: rgba(255,255,255,0.85);
-    }
-
-    .dark-theme {
-      --bg: #0b1116;
-      --text: #e6eef6;
-      --header-bg: #071823;
-      --header-text: #eaf6ff;
-      --muted: #9fb4c9;
-      --surface: #0f1a23;
-      --accent: #6fb3ff;
-      --button-bg: rgba(255,255,255,0.03);
-      --button-border: rgba(255,255,255,0.06);
-      --item-bg: rgba(255,255,255,0.05);
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    header {
-      background: var(--header-bg);
-      color: var(--header-text);
-      padding: 2rem 0;
-      text-align: center;
-    }
-
-    header h1 {
-      margin-bottom: 0.5rem;
-      font-size: 2.5rem;
-      /* Manrope heading */
-      font-family: 'Manrope', Arial, sans-serif;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    .project, .card {
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    footer {
-      text-align: center;
-      margin: 3rem 0;
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    /* keep existing top-left menu and device-toggle styles minimal to match index.html */
-    .top-left-menu { position: fixed; top: 1rem; left: 1rem; z-index: 1000; }
-    .menu-button { min-width: 240px; background: var(--button-bg); color: var(--header-text); border: 1px solid var(--button-border); padding: 0.6rem 0.9rem; border-radius: 10px; }
-    .device-toggle { position: fixed; top: 1rem; right: 1rem; z-index: 1100; width: 52px; height: 52px; background: var(--button-bg); border: 1px solid var(--button-border); border-radius: 12px; }
-
-    /* small responsive nicety */
-    @media (max-width:520px) {
-      .menu-button { min-width: 120px; }
-    }
-  </style>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="About — Tom Boston, small portfolio and front-end projects.">
+  <meta property="og:title" content="About — Tom Boston">
+  <meta property="og:description" content="About page for Tom Boston, developer focused on front-end polish and accessibility.">
+  <meta name="twitter:card" content="summary">
 </head>
 <body>
   <header>
-    <div class="top-left-menu" id="topLeftMenu">
-      <a href="index.html" class="menu-button">← Home</a>
-    </div>
-
-    <!-- Device toggle placeholder to match site header (non-functional copy) -->
-    <button id="deviceToggle" class="device-toggle" aria-pressed="false" title="Toggle device view"></button>
+    <button id="backButton" class="back-button" aria-label="Go back">← Back</button>
+    <!-- Left menu and device toggle removed per request; only the Back button remains -->
 
     <h1>About — Tom Boston</h1>
     <p style="color:var(--muted); margin-top:0.5rem;">A little about me and what I build.</p>
@@ -130,5 +43,6 @@
   <footer>
     © 2025 Tom Boston. All rights reserved.
   </footer>
+  <script src="main.js" defer></script>
 </body>
 </html>

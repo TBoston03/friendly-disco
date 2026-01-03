@@ -84,6 +84,10 @@ a:hover { text-decoration:underline; }
 
 /* Cursor */
 @media (pointer: fine) { body { cursor: none; } }
+/* Hide the native pointer cursor on interactive elements too so it doesn't reappear (we use a custom cursor) */
+@media (pointer: fine) {
+  a, button, input, textarea, select, summary, [role="button"] { cursor: none !important; }
+}
 .custom-cursor { position: fixed; top:0; left:0; width:18px; height:18px; border-radius:50%; background:#00b4cc; pointer-events:none; transform:translate3d(-50%,-50%,0) scale(1); transition: opacity 160ms ease, background-color 160ms ease; z-index:99999; will-change: transform, opacity; box-shadow:0 6px 18px rgba(0,0,0,0.12); }
 .custom-cursor.shrink { transform: translate3d(-50%, -50%, 0) scale(0.78); }
 .custom-cursor.hidden { opacity:0; }
@@ -127,7 +131,7 @@ html.anim-enter-active { transition: transform 420ms cubic-bezier(.2,.9,.25,1); 
 .back-button:focus { outline:2px solid rgba(68,131,188,0.9); outline-offset:3px; }
 
 /* Header reveal behavior */
-header { position:fixed; left:0; top:0; width:100%; z-index:1500; transform:translateY(-120%); transition: transform 360ms cubic-bezier(.2,.9,.25,1), background 240ms ease, box-shadow 240ms ease; background:transparent; }
+header { position:fixed; left:0; top:0; width:100%; z-index:1500; transform:translateY(-120%); transition: background 240ms ease, box-shadow 240ms ease; background:transparent; }
 /* When shown, bring header into view and use compact styling */
 html.show-header header { transform: translateY(0); background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.45)); box-shadow: 0 6px 20px rgba(0,0,0,0.22); padding:0.6rem 0; }
 /* compact header inner styles when revealed */
@@ -151,8 +155,9 @@ html.show-header header h1 { margin:0.4rem 0; font-size:1.1rem; }
   .about-inner .headshot { width:40%; max-width:120px; }
 }
 
-/* When header is shown, add top padding so content isn't hidden under fixed header */
-html.show-header #main { padding-top: 72px; }
+/* When header is shown, we animate a spacer element so content is pushed smoothly */
+.header-spacer { height: 0; transition: height 360ms cubic-bezier(.2,.9,.25,1); }
+.header-spacer.is-active { height: 72px; }
 
 /* Make About Me visually distinct: slightly lighter card */
 .about-me { background: var(--about-surface); border-radius:12px; padding:2rem; box-shadow: 0 12px 36px rgba(2,6,12,0.5); }

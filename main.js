@@ -181,7 +181,14 @@
     const cursor = document.createElement('div'); cursor.className='custom-cursor hidden'; document.body.appendChild(cursor);
     let tx=-100, ty=-100, x=tx, y=ty, raf=null, visible=false; const LERP = 0.18;
     function loop(){ x += (tx-x)*LERP; y += (ty-y)*LERP; cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`; raf = requestAnimationFrame(loop); }
-    function onPointerMove(e){ const tag = (e.target && e.target.tagName) || ''; if (tag==='INPUT' || tag==='TEXTAREA' || e.target.isContentEditable) cursor.classList.add('hidden'); else cursor.classList.remove('hidden'); tx = e.clientX; ty = e.clientY; if (!visible){ visible=true; if (!raf) loop(); } }
+    function onPointerMove(e){
+      // Show the custom cursor everywhere except when typing into editable fields
+      const tag = (e.target && e.target.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) cursor.classList.add('hidden');
+      else cursor.classList.remove('hidden');
+      tx = e.clientX; ty = e.clientY;
+      if (!visible){ visible=true; if (!raf) loop(); }
+    }
     function onPointerDown(){ cursor.classList.add('shrink'); }
     function onPointerUp(){ cursor.classList.remove('shrink'); }
     function onBlur(){ cursor.classList.add('hidden'); } function onFocus(){ cursor.classList.remove('hidden'); }
@@ -258,18 +265,56 @@
   const header = document.querySelector('header');
   const landing = document.getElementById('landing');
   if (!header) return;
-  // If there's no landing (this is a subpage like about.html), show the header immediately
-  if (!landing) { root.classList.add('show-header'); return; }
-  let ticking = false;
-  function checkScroll(){
-    const threshold = Math.max(landing.offsetHeight - 20, 64);
-    if (window.scrollY > threshold) root.classList.add('show-header'); else root.classList.remove('show-header');
-    ticking = false;
+  // ensure there's a spacer element directly after the header to push content smoothly
+  let spacer = document.querySelector('.header-spacer');
+  if (!spacer) {
+    spacer = document.createElement('div');
+    spacer.className = 'header-spacer';
+    header.parentNode.insertBefore(spacer, header.nextSibling);
   }
-  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(checkScroll); } }
-  window.addEventListener('scroll', onScroll, { passive:true });
-  // also run on load in case the page is reloaded scrolled down
-  window.addEventListener('load', checkScroll);
+  // If there's no landing (this is a subpage like about.html), show the header immediately
+  if (!landing) { root.classList.add('show-header'); spacer.classList.add('is-active'); spacer.style.height = header.offsetHeight + 'px'; return; }
+
+  // Use IntersectionObserver on the landing section to drive a smooth, scroll-linked header reveal.
+  // As landing leaves the viewport, we compute a progress value (0..1) and set header transform and spacer height.
+  const thresholds = Array.from({length:101}, (_,i) => i/100);
+  let currentProgress = 0;
+  // initialize header offscreen by header height
+  header.style.transform = `translateY(${- (header.offsetHeight || 72)}px)`;
+  // prepare header h1 sizing interpolation (full -> compact)
+  const headerH1 = header.querySelector('h1');
+  const rootFont = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const fullH1Size = 2.5 * rootFont; // matches CSS `header h1 { font-size:2.5rem; }`
+  const compactH1Size = 1.1 * rootFont; // matches CSS `html.show-header header h1 { font-size:1.1rem; }`
+  const io = new IntersectionObserver((entries) => {
+    const e = entries[0];
+    const ratio = e.intersectionRatio; // 1 when fully visible, 0 when not visible
+    // progress: 0 when landing fully visible, 1 when landing gone
+    const progress = Math.min(1, Math.max(0, 1 - ratio));
+    currentProgress = progress;
+    // translate header from -headerHeight (hidden) to 0
+    const h = header.offsetHeight || 72;
+    const ty = (1 - progress) * -h;
+    header.style.transform = `translateY(${ty}px)`;
+    // interpolate header h1 font-size smoothly between full and compact
+    if (headerH1) {
+      const size = fullH1Size * (1 - progress) + compactH1Size * progress;
+      headerH1.style.fontSize = `${size}px`;
+    }
+    // spacer height matches header reveal
+    spacer.style.height = `${Math.round(h * progress)}px`;
+    // toggle show-header class at extremes for any style hooks
+    if (progress > 0.98) root.classList.add('show-header'); else root.classList.remove('show-header');
+  }, { threshold: thresholds });
+
+  io.observe(landing);
+  // ensure spacer/header stay correct on resize
+  window.addEventListener('resize', () => {
+    const h = header.offsetHeight || 72;
+    header.style.transform = `translateY(${(1 - currentProgress) * -h}px)`;
+    spacer.style.height = `${Math.round(h * currentProgress)}px`;
+  }, { passive: true });
+  
 })();
 
 

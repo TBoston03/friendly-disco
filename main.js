@@ -200,6 +200,43 @@
 
 })();
 
+/* ---------- Projects: expandable details toggle ---------- */
+(function(){
+  // Find all project view-details buttons and wire up toggle behavior
+  const buttons = Array.from(document.querySelectorAll('.project .view-details'));
+  buttons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const project = btn.closest('.project');
+      if (!project) return;
+      const details = project.querySelector('.project-details');
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        // collapse
+        btn.setAttribute('aria-expanded','false');
+        details.setAttribute('aria-hidden','true');
+        // animate collapse by resetting max-height
+        details.style.maxHeight = '0px';
+      } else {
+        // expand
+        btn.setAttribute('aria-expanded','true');
+        details.setAttribute('aria-hidden','false');
+        // set max-height to scrollHeight to animate open
+        details.style.maxHeight = details.scrollHeight + 'px';
+        // in case images load after expansion, recompute maxHeight so the container grows to fit
+        const imgs = details.querySelectorAll('img');
+        imgs.forEach(img => {
+          if (!img.complete) {
+            const onload = () => { details.style.maxHeight = details.scrollHeight + 'px'; img.removeEventListener('load', onload); };
+            img.addEventListener('load', onload);
+          }
+        });
+        // also nudge after a short delay to catch layout changes
+        setTimeout(() => { details.style.maxHeight = details.scrollHeight + 'px'; }, 120);
+      }
+    });
+  });
+})();
+
 /* ---------- Landing-local dot canvas to ensure splash has dots even when global canvas is behind landing background ---------- */
 (function(){
   const landing = document.getElementById('landing');

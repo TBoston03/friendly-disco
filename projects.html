@@ -4,10 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Projects — Tom Boston</title>
-  <!-- Manrope font for heading -->
+
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
+  <!-- Inline fallback styles: ensure details are collapsed and images sized even if external CSS fails to load on the live site -->
+  <style>
+    .project-details { overflow:hidden; max-height:0; transition: max-height 360ms cubic-bezier(.2,.9,.25,1), opacity 260ms ease; opacity:0; }
+    .project-details[aria-hidden="false"] { opacity:1; }
+    .placeholder-box { width:220px; height:auto; overflow:hidden; }
+    .project-img { width:100%; height:auto; display:block; max-width:100%; }
+    .project .view-details { cursor:pointer; }
+  </style>
   <meta name="description" content="Projects by Tom Boston — placeholder project list.">
   <meta property="og:title" content="Projects — Tom Boston">
   <meta property="og:description" content="A list of projects (placeholder).">
@@ -102,5 +110,28 @@
   </footer>
 
   <script src="main.js" defer></script>
+  <!-- Fallback toggle initialization: only run when the main script didn't load or initialize -->
+  <script>
+    (function(){
+      function initFallback(){
+        const buttons = Array.from(document.querySelectorAll('.project .view-details'));
+        buttons.forEach(btn => {
+          if (btn.dataset.fallbackAttached) return;
+          btn.dataset.fallbackAttached = '1';
+          btn.addEventListener('click', (e) => {
+            const project = btn.closest('.project'); if (!project) return;
+            const details = project.querySelector('.project-details'); if (!details) return;
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            if (expanded){ btn.setAttribute('aria-expanded','false'); details.setAttribute('aria-hidden','true'); details.style.maxHeight = '0px'; }
+            else { btn.setAttribute('aria-expanded','true'); details.setAttribute('aria-hidden','false'); details.style.maxHeight = details.scrollHeight + 'px'; setTimeout(()=>{ details.style.maxHeight = details.scrollHeight + 'px'; },120); }
+          });
+        });
+      }
+      // Only attach fallback if the main script hasn't initialized the global helper
+      if (!window._friendlyDisco){
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initFallback); else initFallback();
+      }
+    })();
+  </script>
 </body>
 </html>
